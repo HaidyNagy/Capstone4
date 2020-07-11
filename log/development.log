@@ -3375,3 +3375,549 @@ Processing by InquiriesController#index as JSON
   [1m[36mSQL (0.4ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"u3Z2ftHpkVNZxQwEcsuFaA\":{\"token\":\"$2a$10$O12hVGsRcQc.FkyQpnkMM.mJyDPtlyh4NxbD/0Kmw8By7HySu0CZm\",\"expiry\":1512326414,\"last_token\":\"$2a$10$YVrJeRVz2R3Vc9VZFobJXusaXZmiv/FYJV2N8ih5TcC1fP/jH5N86\",\"updated_at\":\"2017-11-19T19:40:18.869+01:00\"}}"], ["updated_at", "2017-11-19 18:40:18.870313"], ["id", 6]]
   [1m[35m (0.5ms)[0m  COMMIT
 Completed 200 OK in 18ms (Views: 4.4ms | ActiveRecord: 2.7ms)
+  [1m[36m (34.9ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL) [0m
+  [1m[35m (8.9ms)[0m  CREATE UNIQUE INDEX  "unique_schema_migrations" ON "schema_migrations"  ("version")
+  [1m[36mActiveRecord::SchemaMigration Load (3.0ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to CreateFoos (20161202054453)
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36m (30.0ms)[0m  [1mCREATE TABLE "foos" ("id" serial primary key, "name" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) [0m
+  [1m[35mSQL (2.9ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES ($1)  [["version", "20161202054453"]]
+  [1m[36m (3.0ms)[0m  [1mCOMMIT[0m
+Migrating to AddFooNameConstraint (20161222170032)
+  [1m[35m (2.0ms)[0m  BEGIN
+  [1m[36m (1.9ms)[0m  [1mALTER TABLE "foos" ALTER COLUMN "name" TYPE character varying[0m
+  [1m[35m (2.0ms)[0m  ALTER TABLE "foos" ALTER "name" SET NOT NULL
+  [1m[36mSQL (1.0ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES ($1)[0m  [["version", "20161222170032"]]
+  [1m[35m (2.0ms)[0m  COMMIT
+Migrating to DeviseTokenAuthCreateUsers (20161230152654)
+  [1m[36m (0.9ms)[0m  [1mBEGIN[0m
+  [1m[35m (29.6ms)[0m  CREATE TABLE "users" ("id" serial primary key, "provider" character varying DEFAULT 'email' NOT NULL, "uid" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp, "remember_created_at" timestamp, "sign_in_count" integer DEFAULT 0 NOT NULL, "current_sign_in_at" timestamp, "last_sign_in_at" timestamp, "current_sign_in_ip" character varying, "last_sign_in_ip" character varying, "confirmation_token" character varying, "confirmed_at" timestamp, "confirmation_sent_at" timestamp, "unconfirmed_email" character varying, "name" character varying, "nickname" character varying, "image" character varying, "email" character varying, "tokens" json, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) 
+  [1m[36m (10.0ms)[0m  [1mCREATE  INDEX  "index_users_on_email" ON "users"  ("email")[0m
+  [1m[35m (6.0ms)[0m  CREATE UNIQUE INDEX  "index_users_on_uid_and_provider" ON "users"  ("uid", "provider")
+  [1m[36m (9.0ms)[0m  [1mCREATE UNIQUE INDEX  "index_users_on_reset_password_token" ON "users"  ("reset_password_token")[0m
+  [1m[35mSQL (1.0ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES ($1)  [["version", "20161230152654"]]
+  [1m[36m (3.0ms)[0m  [1mCOMMIT[0m
+Migrating to CreateThingImages (20170102235241)
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36m (26.9ms)[0m  [1mCREATE TABLE "images" ("id" serial primary key, "caption" character varying, "creator_id" integer NOT NULL, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) [0m
+  [1m[35m (26.9ms)[0m  CREATE TABLE "things" ("id" serial primary key, "name" character varying NOT NULL, "description" text, "notes" text, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) 
+  [1m[36m (12.0ms)[0m  [1mCREATE TABLE "thing_images" ("id" serial primary key, "image_id" integer NOT NULL, "thing_id" integer NOT NULL, "priority" integer DEFAULT 5 NOT NULL, "creator_id" integer NOT NULL, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) [0m
+  [1m[35m (9.9ms)[0m  CREATE  INDEX  "index_thing_images_on_image_id" ON "thing_images"  ("image_id")
+  [1m[36m (12.0ms)[0m  [1mCREATE  INDEX  "index_thing_images_on_thing_id" ON "thing_images"  ("thing_id")[0m
+  [1m[35m (8.9ms)[0m  ALTER TABLE "thing_images" ADD CONSTRAINT "fk_rails_f946735fdd"
+FOREIGN KEY ("image_id")
+  REFERENCES "images" ("id")
+
+  [1m[36m (2.9ms)[0m  [1mALTER TABLE "thing_images" ADD CONSTRAINT "fk_rails_016d82358c"
+FOREIGN KEY ("thing_id")
+  REFERENCES "things" ("id")
+[0m
+  [1m[35m (7.0ms)[0m  CREATE  INDEX  "index_images_on_creator_id" ON "images"  ("creator_id")
+  [1m[36m (5.9ms)[0m  [1mCREATE  INDEX  "index_things_on_name" ON "things"  ("name")[0m
+  [1m[35m (8.0ms)[0m  CREATE UNIQUE INDEX  "index_thing_images_on_image_id_and_thing_id" ON "thing_images"  ("image_id", "thing_id")
+  [1m[36mSQL (1.0ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES ($1)[0m  [["version", "20170102235241"]]
+  [1m[35m (5.0ms)[0m  COMMIT
+Migrating to CreateRoles (20170130051702)
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35m (24.9ms)[0m  CREATE TABLE "roles" ("id" serial primary key, "user_id" integer NOT NULL, "role_name" character varying NOT NULL, "mname" character varying, "mid" integer, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) 
+  [1m[36m (11.0ms)[0m  [1mCREATE  INDEX  "index_roles_on_user_id" ON "roles"  ("user_id")[0m
+  [1m[35m (7.0ms)[0m  CREATE  INDEX  "index_roles_on_mname" ON "roles"  ("mname")
+  [1m[36m (7.0ms)[0m  [1mCREATE  INDEX  "index_roles_on_mid" ON "roles"  ("mid")[0m
+  [1m[35m (8.0ms)[0m  ALTER TABLE "roles" ADD CONSTRAINT "fk_rails_ab35d699f0"
+FOREIGN KEY ("user_id")
+  REFERENCES "users" ("id")
+
+  [1m[36m (10.0ms)[0m  [1mCREATE  INDEX  "index_roles_on_mname_and_mid" ON "roles"  ("mname", "mid")[0m
+  [1m[35mSQL (1.0ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES ($1)  [["version", "20170130051702"]]
+  [1m[36m (4.0ms)[0m  [1mCOMMIT[0m
+Migrating to CreateInquiries (20171101045154)
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36m (22.9ms)[0m  [1mCREATE TABLE "inquiries" ("id" serial primary key, "subject" character varying NOT NULL, "description" text, "creator_id" integer NOT NULL, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL) [0m
+  [1m[35m (11.0ms)[0m  CREATE  INDEX  "index_inquiries_on_creator_id" ON "inquiries"  ("creator_id")
+  [1m[36mSQL (0.0ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES ($1)[0m  [["version", "20171101045154"]]
+  [1m[35m (4.9ms)[0m  COMMIT
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[35m (8.0ms)[0m  SELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'foos'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+
+  [1m[36m (7.9ms)[0m  [1mSELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'images'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+[0m
+  [1m[35m (9.0ms)[0m  SELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'inquiries'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+
+  [1m[36m (10.9ms)[0m  [1mSELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'roles'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+[0m
+  [1m[35m (10.9ms)[0m  SELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'thing_images'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+
+  [1m[36m (8.9ms)[0m  [1mSELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'things'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+[0m
+  [1m[35m (9.0ms)[0m  SELECT t2.oid::regclass::text AS to_table, a1.attname AS column, a2.attname AS primary_key, c.conname AS name, c.confupdtype AS on_update, c.confdeltype AS on_delete
+FROM pg_constraint c
+JOIN pg_class t1 ON c.conrelid = t1.oid
+JOIN pg_class t2 ON c.confrelid = t2.oid
+JOIN pg_attribute a1 ON a1.attnum = c.conkey[1] AND a1.attrelid = t1.oid
+JOIN pg_attribute a2 ON a2.attnum = c.confkey[1] AND a2.attrelid = t2.oid
+JOIN pg_namespace t3 ON c.connamespace = t3.oid
+WHERE c.contype = 'f'
+  AND t1.relname = 'users'
+  AND t3.nspname = ANY (current_schemas(false))
+ORDER BY c.conname
+
+
+
+Started GET "/" for ::1 at 2020-07-11 18:44:35 +0200
+  [1m[36mActiveRecord::SchemaMigration Load (3.0ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Processing by UiController#index as HTML
+  Rendered ui/index.html.erb (14797.9ms)
+Completed 200 OK in 15036ms (Views: 15000.6ms | ActiveRecord: 0.0ms)
+
+
+Started GET "/assets/bootstrap.self-bc00d33fcf5ea6d5700095e985d9d648e50d7e225cc3c61bccede3acea975354.css?body=1" for ::1 at 2020-07-11 18:44:52 +0200
+
+
+Started GET "/assets/spa-demo/layout.self-aaa8013189ddf2a120fa504a7813c8407d3cd9ad788ba2d3a32081ae452648f1.css?body=1" for ::1 at 2020-07-11 18:44:52 +0200
+
+
+Started GET "/assets/spa-demo/authn.self-6b5b16b055f6e2520494c95ccf0817511702da54430e9387f11c065624797d18.css?body=1" for ::1 at 2020-07-11 18:44:53 +0200
+
+
+Started GET "/assets/spa-demo.self-a174a6737333b72759c775bf246610458a5a4aff24594ced8f3688087b79c6cd.css?body=1" for ::1 at 2020-07-11 18:44:53 +0200
+
+
+Started GET "/assets/jquery2.self-25ca496239ae8641a09627c8aace5863e7676e465fbb4ce81bc7eb78c4d15627.js?body=1" for ::1 at 2020-07-11 18:44:53 +0200
+
+
+Started GET "/assets/spa-demo/subjects.self-99cac226fe8b614f1a296fda470546d959b807234aabf3d8978b9723ceea7669.css?body=1" for ::1 at 2020-07-11 18:44:54 +0200
+
+
+Started GET "/assets/bootstrap/bootstrap.self-b38817c3e3a3049abb1fc08dd6ae448b23330f8453226efdb074710209474f75.js?body=1" for ::1 at 2020-07-11 18:44:54 +0200
+
+
+Started GET "/assets/bootstrap.self-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.js?body=1" for ::1 at 2020-07-11 18:44:54 +0200
+
+
+Started GET "/assets/angular/angular.self-55459d3bd6c820b82a84405c655eb594e8f13110f3bfb3c25711a3cc3510e952.js?body=1" for ::1 at 2020-07-11 18:44:55 +0200
+
+
+Started GET "/assets/angular.self-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.js?body=1" for ::1 at 2020-07-11 18:44:55 +0200
+
+
+Started GET "/assets/angular-ui-router/angular-ui-router.self-484535be11e46ece5dc912bd59058bcbc03a48c1d76790d4a75d383375db7e35.js?body=1" for ::1 at 2020-07-11 18:44:55 +0200
+
+
+Started GET "/assets/angular-ui-router.self-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.js?body=1" for ::1 at 2020-07-11 18:44:56 +0200
+
+
+Started GET "/assets/angular-resource/angular-resource.self-5152cd6c6485841422d7562f1e4ba85eaf77ae70888988eee8155e8491754b87.js?body=1" for ::1 at 2020-07-11 18:44:56 +0200
+
+
+Started GET "/assets/angular-resource.self-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.js?body=1" for ::1 at 2020-07-11 18:44:56 +0200
+
+
+Started GET "/assets/angular-cookie/angular-cookie.self-0f7fb19686473accc00652b4579b0f6879dd9aaa777787de5643571af2251394.js?body=1" for ::1 at 2020-07-11 18:44:57 +0200
+
+
+Started GET "/assets/angular-cookie.self-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.js?body=1" for ::1 at 2020-07-11 18:44:57 +0200
+
+
+Started GET "/assets/ng-token-auth/ng-token-auth.self-8a84fb0d317281d076a73e2d7d236358fbdadc14512dba2ed5712479df6baf66.js?body=1" for ::1 at 2020-07-11 18:44:58 +0200
+
+
+Started GET "/assets/ng-token-auth.self-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.js?body=1" for ::1 at 2020-07-11 18:44:58 +0200
+
+
+Started GET "/assets/spa-demo/app.module.self-bc2127ef99641aa698b609224bd4c2bec54a1bf736f49c1eb51712b52a56e505.js?body=1" for ::1 at 2020-07-11 18:44:58 +0200
+
+
+Started GET "/assets/spa-demo/app.router.self-000f4cb08cd4e6b66bde826e527be43f32af2e14810d64e7b710d198cad7b492.js?body=1" for ::1 at 2020-07-11 18:44:58 +0200
+
+
+Started GET "/assets/spa-demo/config/config.module.self-b73afcf84ab1e35e9d11a980fccc7a272673303504540df4d363d03c8df9a0ba.js?body=1" for ::1 at 2020-07-11 18:44:59 +0200
+
+
+Started GET "/assets/spa-demo/authn/authn.module.self-94201ad4d145f8e9c34630710544feb32db4d7c7b4144da391ea0f874e407bbb.js?body=1" for ::1 at 2020-07-11 18:44:59 +0200
+
+
+Started GET "/assets/spa-demo/authn/authn.config.self-5fdf43a46e96fb3687a5f316d06ba014a42fba4444b7f6eb536af318727a6041.js?body=1" for ::1 at 2020-07-11 18:45:00 +0200
+
+
+Started GET "/assets/spa-demo/authn/authn.service.self-9dc407bcdecb7d56647f04af8fa7158e85f56be7fe499904cbb363399d6536bc.js?body=1" for ::1 at 2020-07-11 18:45:00 +0200
+
+
+Started GET "/assets/spa-demo/authn/whoami.service.self-cad8f30e795e9e0f517b27e443271727158c373463eb5d5ff2666bb7e103226d.js?body=1" for ::1 at 2020-07-11 18:45:00 +0200
+
+
+Started GET "/assets/spa-demo/authn/checkme.service.self-309c80d2d46044a1b926ed0c24b6775c1e7e992f01986dd12dd32cf3f95c234c.js?body=1" for ::1 at 2020-07-11 18:45:01 +0200
+
+
+Started GET "/assets/spa-demo/authn/signup/signup.component.self-11fbe22a138b930f01508b8f0a9fb00815af23526b7a2eb809a858c1dc4b3c91.js?body=1" for ::1 at 2020-07-11 18:45:01 +0200
+
+
+Started GET "/assets/spa-demo/authn/authn_session/authn_session.component.self-748d7a6453b31ac85ca5083cfb88f907b290bad707bf7d0b0b06f09462bd8403.js?body=1" for ::1 at 2020-07-11 18:45:01 +0200
+
+
+Started GET "/assets/spa-demo/authn/authn_check/authn_check.directive.self-fc694ac3a8a9aca7f446f5896df1fbe379eb10e59100076c12176078859f07cb.js?body=1" for ::1 at 2020-07-11 18:45:02 +0200
+
+
+Started GET "/assets/spa-demo/authz/authz.module.self-19d7bf68079b93b3d25412ddc870beb58376c53022540536c4a083a19358f4b1.js?body=1" for ::1 at 2020-07-11 18:45:02 +0200
+
+
+Started GET "/assets/spa-demo/authz/authz.service.self-04492450d7cb8464dc5657429a8a3520850db6b26577e6827fde97d551920638.js?body=1" for ::1 at 2020-07-11 18:45:02 +0200
+
+
+Started GET "/assets/spa-demo/authz/base_policy.service.self-9b35e17fedebbd3d5831b833938a633ec3dbbf9444a6eab7428f63edc3c6db2f.js?body=1" for ::1 at 2020-07-11 18:45:03 +0200
+
+
+Started GET "/assets/spa-demo/layout/layout.module.self-5816b38d8cbf0dcf6551cdfaaa99a17bd9db0a9c05574592f75bb8b5927ab623.js?body=1" for ::1 at 2020-07-11 18:45:03 +0200
+
+
+Started GET "/assets/spa-demo/layout/navbar/navbar.component.self-bff49fe97b6846f9954d095bb534f95a249cb6ba4cb4c1f04b19e705d221dc91.js?body=1" for ::1 at 2020-07-11 18:45:03 +0200
+
+
+Started GET "/assets/spa-demo/foos/foos.module.self-0fffb80852ad598ea5d565434a30d7dd9183f489c6ac4b3e93b7392c91d89665.js?body=1" for ::1 at 2020-07-11 18:45:04 +0200
+
+
+Started GET "/assets/spa-demo/foos/foos.service.self-5989b1d2a164d465690373af54af0fd973d4d454714698a2d54d3bb75d6239cf.js?body=1" for ::1 at 2020-07-11 18:45:04 +0200
+
+
+Started GET "/assets/spa-demo/foos/foos.controller.self-e375756f2fbef4fa2ce046b0f9bba4329f581f552eb67f789e64ed7232254c8e.js?body=1" for ::1 at 2020-07-11 18:45:04 +0200
+
+
+Started GET "/assets/spa-demo/foos/foos.directive.self-8b7814c79079f85b4c514ef2f5fb6fd5d1db807fe7974ce79092df3e23bd842f.js?body=1" for ::1 at 2020-07-11 18:45:04 +0200
+
+
+Started GET "/assets/spa-demo/subjects/subjects.module.self-e8895be4793d306bfc0cbefa1e53032bd0d503d42a260178b94f5a525f1daef7.js?body=1" for ::1 at 2020-07-11 18:45:05 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/images.service.self-325a6daad24381f9f8ff5256702d9edb28f66c0edd4469611a733d8de7708f7a.js?body=1" for ::1 at 2020-07-11 18:45:05 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/images_authz.service.self-ed5dec88bc1a374d41ddc373ae082ddf2dc9ae970d6d7579dd479e57fdcb1b52.js?body=1" for ::1 at 2020-07-11 18:45:05 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/image_things.service.self-cc805716954e1b8ceb2f6138cf8a8a7f41cdfa25b9440c9f4f2dd8d4e44b3efe.js?body=1" for ::1 at 2020-07-11 18:45:06 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/image_linkable_things.service.self-ff3701d9df0c8e18d3b5b7503b0d19041fc7ba249bae1a8612cb584a91494a8e.js?body=1" for ::1 at 2020-07-11 18:45:06 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/images.component.self-2ce9b157e9923e70d283f0563fa6e16c443c49ff6113360f93e3ac749ce45ae8.js?body=1" for ::1 at 2020-07-11 18:45:07 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/images_authz.directive.self-b9f0be5cc5ddf5b4b774b523b479fafcff83e219da8eeb1c7745d5a5ef4fd9e1.js?body=1" for ::1 at 2020-07-11 18:45:07 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/things.service.self-2467671b4b30f4fbd8e469cc5d0fbcfa9f3a397022de1ed6aaff8e883db4a1b8.js?body=1" for ::1 at 2020-07-11 18:45:07 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/thing_images.service.self-bb793309bd4da75d8e9b6948908938ecd9820c49bc7b8dd0831779e3cd8ea315.js?body=1" for ::1 at 2020-07-11 18:45:08 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/things_authz.service.self-ff1b77e2ad171e6fe7409033809e8bf77570943aef807dd4ca0d5c0290845e04.js?body=1" for ::1 at 2020-07-11 18:45:08 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/things_authz.directive.self-57bde368250c2d045ddc7767772c4ae2197a9126a43252f653d8f540d4af6a45.js?body=1" for ::1 at 2020-07-11 18:45:08 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/things.component.self-07d5223c863f1e42e5f58b03e3d712a5418dfb1c395c4fe2bb0aeea108d59667.js?body=1" for ::1 at 2020-07-11 18:45:09 +0200
+
+
+Started GET "/assets/spa-demo/subjects/inquiries/inquiries.service.self-abaf12463d2fdd166e959fb9eccd7e5e89982db24b42e481345f9c77ad32370d.js?body=1" for ::1 at 2020-07-11 18:45:09 +0200
+
+
+Started GET "/assets/spa-demo/subjects/inquiries/inquiries_authz.service.self-1701a5d4f0bd18458e28e3fc85506cb601d7e8af784245536acc537c42438ded.js?body=1" for ::1 at 2020-07-11 18:45:09 +0200
+
+
+Started GET "/assets/spa-demo/subjects/inquiries/inquiries.component.self-40bd00e97eaf908b5c49c03abee33a64a368d6796e321bb6418b10a890bc1146.js?body=1" for ::1 at 2020-07-11 18:45:10 +0200
+
+
+Started GET "/assets/spa-demo/subjects/inquiries/inquiries_authz.directive.self-f35ae64eb0bd3f2c87fb155e5069f9695fbe9b09b3e1f64b1fb0190c1ee89847.js?body=1" for ::1 at 2020-07-11 18:45:10 +0200
+
+
+Started GET "/assets/spa-demo.self-dd5988cb155e9d47ab85857eaee0a6e1f57befb9473fc7bb0ebf531cbd80b297.js?body=1" for ::1 at 2020-07-11 18:45:10 +0200
+
+
+Started GET "/assets/spa-demo/layout/navbar/navbar-50456020826c2ed5082606bbc0ad8b65e3b851cad8f6453fd05287bb1184bc9a.html" for ::1 at 2020-07-11 18:45:11 +0200
+
+
+Started GET "/assets/spa-demo/authn/authn_session/authn_session-febc3c956a8a908d42a91c083d0e8ce6ca7bf3bbe676f7c288cd2adaabd9e8f4.html" for ::1 at 2020-07-11 18:45:11 +0200
+
+
+Started GET "/assets/spa-demo/pages/signup_page-b1638fd4276306af4f690eb811ce17b344dbb7e45fbf040296585dd07072c18e.html" for ::1 at 2020-07-11 18:52:39 +0200
+
+
+Started GET "/assets/spa-demo/authn/signup/signup-ee18d84ab328fa5c89abd4cc8a93b46aceda8c9b979285e6bb6065d17746e507.html" for ::1 at 2020-07-11 18:52:39 +0200
+
+
+Started POST "/auth" for ::1 at 2020-07-11 18:52:57 +0200
+Processing by DeviseTokenAuth::RegistrationsController#create as HTML
+  Parameters: {"email"=>"haidynagy77@gmail.com", "name"=>"haidy", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]", "confirm_success_url"=>"http://localhost:3000/#/signup", "config_name"=>"default", "registration"=>{"email"=>"haidynagy77@gmail.com", "name"=>"haidy", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]", "confirm_success_url"=>"http://localhost:3000/#/signup", "config_name"=>"default"}}
+Unpermitted parameters: confirm_success_url, config_name, registration
+Unpermitted parameters: confirm_success_url, config_name, registration
+Unpermitted parameters: confirm_success_url, config_name, registration
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36m (2.0ms)[0m  [1mSELECT COUNT(*) FROM "users" WHERE "users"."provider" = $1 AND "users"."email" = $2[0m  [["provider", "email"], ["email", "haidynagy77@gmail.com"]]
+  [1m[35m (1.0ms)[0m  ROLLBACK
+Completed 422 Unprocessable Entity in 38333ms (Views: 0.6ms | ActiveRecord: 9.0ms)
+
+
+Started POST "/auth" for ::1 at 2020-07-11 18:53:35 +0200
+Processing by DeviseTokenAuth::RegistrationsController#create as HTML
+  Parameters: {"email"=>"haidynagy77@gmail.com", "name"=>"haidy", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]", "confirm_success_url"=>"http://localhost:3000/#/signup", "config_name"=>"default", "registration"=>{"email"=>"haidynagy77@gmail.com", "name"=>"haidy", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]", "confirm_success_url"=>"http://localhost:3000/#/signup", "config_name"=>"default"}}
+Unpermitted parameters: confirm_success_url, config_name, registration
+Unpermitted parameters: confirm_success_url, config_name, registration
+Unpermitted parameters: confirm_success_url, config_name, registration
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35m (1.0ms)[0m  SELECT COUNT(*) FROM "users" WHERE "users"."provider" = $1 AND "users"."email" = $2  [["provider", "email"], ["email", "haidynagy77@gmail.com"]]
+  [1m[36m (1.0ms)[0m  [1mROLLBACK[0m
+Completed 422 Unprocessable Entity in 109ms (Views: 0.5ms | ActiveRecord: 3.0ms)
+
+
+Started POST "/auth" for ::1 at 2020-07-11 18:53:58 +0200
+Processing by DeviseTokenAuth::RegistrationsController#create as HTML
+  Parameters: {"email"=>"haidynagy77@gmail.com", "name"=>"haidy", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]", "confirm_success_url"=>"http://localhost:3000/#/signup", "config_name"=>"default", "errors"=>{"password"=>"[FILTERED]", "full_messages"=>["Password is too short (minimum is 8 characters)"]}, "registration"=>{"email"=>"haidynagy77@gmail.com", "name"=>"haidy", "password"=>"[FILTERED]", "password_confirmation"=>"[FILTERED]", "confirm_success_url"=>"http://localhost:3000/#/signup", "config_name"=>"default", "errors"=>{"password"=>"[FILTERED]", "full_messages"=>["Password is too short (minimum is 8 characters)"]}}}
+Unpermitted parameters: confirm_success_url, config_name, errors, registration
+Unpermitted parameters: confirm_success_url, config_name, errors, registration
+Unpermitted parameters: confirm_success_url, config_name, errors, registration
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36m (1.0ms)[0m  [1mSELECT COUNT(*) FROM "users" WHERE "users"."provider" = $1 AND "users"."email" = $2[0m  [["provider", "email"], ["email", "haidynagy77@gmail.com"]]
+  [1m[35mSQL (3.0ms)[0m  INSERT INTO "users" ("email", "encrypted_password", "name", "tokens", "uid", "created_at", "updated_at") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING "id"  [["email", "haidynagy77@gmail.com"], ["encrypted_password", "$2a$10$mCtdhALe16g21Tk44Ml3v.tAEj6925H94Z2.fS.9Owk54bTaxKcKy"], ["name", "haidy"], ["tokens", "{}"], ["uid", "haidynagy77@gmail.com"], ["created_at", "2020-07-11 16:53:58.848444"], ["updated_at", "2020-07-11 16:53:58.848444"]]
+  [1m[36m (3.0ms)[0m  [1mCOMMIT[0m
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36mSQL (1.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"expiry\":1595696039}}"], ["updated_at", "2020-07-11 16:53:59.203497"], ["id", 1]]
+  [1m[35m (3.0ms)[0m  COMMIT
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Load (1.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 1]]
+  [1m[36mSQL (0.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"}}"], ["updated_at", "2020-07-11 16:53:59.574506"], ["id", 1]]
+  [1m[35m (4.0ms)[0m  COMMIT
+Completed 200 OK in 836ms (Views: 1.0ms | ActiveRecord: 21.0ms)
+
+
+Started GET "/assets/spa-demo/pages/main-0f4fcb5abc8c99d36e9fcda4a61486332e373ba7984a9ebc4f2b088261c65b27.html" for ::1 at 2020-07-11 18:53:59 +0200
+
+
+Started GET "/assets/spa-demo/foos/foos-e5bc979caf44e359fdb78003b0706a65bef17d8a6d2eaabcbb764d40ed2048c0.html" for ::1 at 2020-07-11 18:53:59 +0200
+
+
+Started GET "/api/foos" for ::1 at 2020-07-11 18:54:00 +0200
+Processing by FoosController#index as JSON
+  [1m[36mFoo Load (1.0ms)[0m  [1mSELECT "foos".* FROM "foos"[0m
+  Rendered foos/index.json.jbuilder (25.9ms)
+Completed 200 OK in 89ms (Views: 79.8ms | ActiveRecord: 2.0ms)
+
+
+Started POST "/auth/sign_in" for ::1 at 2020-07-11 18:54:31 +0200
+Processing by DeviseTokenAuth::SessionsController#create as HTML
+  Parameters: {"email"=>"haidynagy77@gmail.com", "password"=>"[FILTERED]", "session"=>{"email"=>"haidynagy77@gmail.com", "password"=>"[FILTERED]"}}
+Unpermitted parameter: session
+Unpermitted parameter: session
+  [1m[35mUser Load (2.0ms)[0m  SELECT  "users".* FROM "users" WHERE (email = 'haidynagy77@gmail.com' AND provider='email')  ORDER BY "users"."id" ASC LIMIT 1
+Unpermitted parameter: session
+Unpermitted parameter: session
+  [1m[36m (0.0ms)[0m  [1mBEGIN[0m
+  [1m[35mSQL (1.0ms)[0m  UPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"72JhWpDk2rzDqHxZZDRnzg\":{\"token\":\"$2a$12$7ynY6nY/37D4vl0Sgox0auXQDjxv4g/sK7hQRQhDRcQs690SL0zc6\",\"expiry\":1595696072}}"], ["updated_at", "2020-07-11 16:54:32.054256"], ["id", 1]]
+  [1m[36m (1.0ms)[0m  [1mCOMMIT[0m
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36mSQL (2.0ms)[0m  [1mUPDATE "users" SET "last_sign_in_at" = $1, "current_sign_in_at" = $2, "last_sign_in_ip" = $3, "current_sign_in_ip" = $4, "sign_in_count" = $5, "updated_at" = $6 WHERE "users"."id" = $7[0m  [["last_sign_in_at", "2020-07-11 16:54:32.064227"], ["current_sign_in_at", "2020-07-11 16:54:32.064227"], ["last_sign_in_ip", "::1"], ["current_sign_in_ip", "::1"], ["sign_in_count", 1], ["updated_at", "2020-07-11 16:54:32.066222"], ["id", 1]]
+  [1m[35m (1.0ms)[0m  COMMIT
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Load (1.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 1]]
+  [1m[36mSQL (1.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"72JhWpDk2rzDqHxZZDRnzg\":{\"token\":\"$2a$12$8U2cWLXB1FzjI2KOBbLzJ.CrMepCeAmnmTQjBKLXLArV4iIXe4dJG\",\"expiry\":1595696072,\"last_token\":\"$2a$12$7ynY6nY/37D4vl0Sgox0auXQDjxv4g/sK7hQRQhDRcQs690SL0zc6\",\"updated_at\":\"2020-07-11T18:54:32.427+02:00\"}}"], ["updated_at", "2020-07-11 16:54:32.429050"], ["id", 1]]
+  [1m[35m (1.0ms)[0m  COMMIT
+Completed 200 OK in 828ms (Views: 0.3ms | ActiveRecord: 12.0ms)
+
+
+Started DELETE "/auth/sign_out" for ::1 at 2020-07-11 18:54:39 +0200
+Processing by DeviseTokenAuth::SessionsController#destroy as HTML
+  [1m[36mUser Load (0.9ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."uid" = $1 LIMIT 1[0m  [["uid", "haidynagy77@gmail.com"]]
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36mSQL (1.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"}}"], ["updated_at", "2020-07-11 16:54:40.341451"], ["id", 1]]
+  [1m[35m (1.0ms)[0m  COMMIT
+Completed 200 OK in 385ms (Views: 0.6ms | ActiveRecord: 3.9ms)
+
+
+Started POST "/auth/sign_in" for ::1 at 2020-07-11 18:54:44 +0200
+Processing by DeviseTokenAuth::SessionsController#create as HTML
+  Parameters: {"email"=>"haidynagy77@gmail.com", "password"=>"[FILTERED]", "session"=>{"email"=>"haidynagy77@gmail.com", "password"=>"[FILTERED]"}}
+Unpermitted parameter: session
+Unpermitted parameter: session
+  [1m[36mUser Load (1.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE (email = 'haidynagy77@gmail.com' AND provider='email')  ORDER BY "users"."id" ASC LIMIT 1[0m
+Unpermitted parameter: session
+Unpermitted parameter: session
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36mSQL (1.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$sR4xlOnSjqUSwbo9xXMYB.j5nFa29lX7Z/QL.dPP5toSmQ4D7SMhy\",\"expiry\":1595696085}}"], ["updated_at", "2020-07-11 16:54:45.335625"], ["id", 1]]
+  [1m[35m (3.5ms)[0m  COMMIT
+  [1m[36m (0.0ms)[0m  [1mBEGIN[0m
+  [1m[35mSQL (0.0ms)[0m  UPDATE "users" SET "current_sign_in_at" = $1, "sign_in_count" = $2, "updated_at" = $3 WHERE "users"."id" = $4  [["current_sign_in_at", "2020-07-11 16:54:45.348971"], ["sign_in_count", 2], ["updated_at", "2020-07-11 16:54:45.353961"], ["id", 1]]
+  [1m[36m (0.0ms)[0m  [1mCOMMIT[0m
+  [1m[35m (0.0ms)[0m  BEGIN
+  [1m[36mUser Load (1.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE[0m  [["id", 1]]
+  [1m[35mSQL (1.0ms)[0m  UPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$Ny4T.Kt1K0mYPqFmUe1TV.7EItF2kySHjAlExkD2c.lEljphqhGe2\",\"expiry\":1595696085,\"last_token\":\"$2a$12$sR4xlOnSjqUSwbo9xXMYB.j5nFa29lX7Z/QL.dPP5toSmQ4D7SMhy\",\"updated_at\":\"2020-07-11T18:54:45.697+02:00\"}}"], ["updated_at", "2020-07-11 16:54:45.700656"], ["id", 1]]
+  [1m[36m (4.0ms)[0m  [1mCOMMIT[0m
+Completed 200 OK in 813ms (Views: 0.2ms | ActiveRecord: 12.4ms)
+
+
+Started POST "/api/foos" for ::1 at 2020-07-11 18:55:00 +0200
+Processing by FoosController#create as JSON
+  Parameters: {"foo"=>{"name"=>"FOO1"}}
+  [1m[35m (1.0ms)[0m  BEGIN
+  [1m[36mSQL (1.0ms)[0m  [1mINSERT INTO "foos" ("name", "created_at", "updated_at") VALUES ($1, $2, $3) RETURNING "id"[0m  [["name", "FOO1"], ["created_at", "2020-07-11 16:55:00.304225"], ["updated_at", "2020-07-11 16:55:00.304225"]]
+  [1m[35m (4.0ms)[0m  COMMIT
+  Rendered foos/_foo.json.jbuilder (1.0ms)
+  Rendered foos/show.json.jbuilder (28.9ms)
+Completed 201 Created in 97ms (Views: 76.1ms | ActiveRecord: 7.1ms)
+
+
+Started GET "/assets/spa-demo/pages/images_page-c4165c503ad0da133576deeab857e21d45419e57c1a32903cde6f5444a44f1af.html" for ::1 at 2020-07-11 18:55:05 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/image_editor-33f9f43649472396fb4dfea5c852081b079a0d25c9c2fa7d349a3c501739b921.html" for ::1 at 2020-07-11 18:55:05 +0200
+
+
+Started GET "/assets/spa-demo/subjects/images/image_selector-c961083fdc0defba33a72ca98ad33a3de6076cd463b83f2616cc68c477924c71.html" for ::1 at 2020-07-11 18:55:06 +0200
+
+
+Started GET "/authn/whoami" for ::1 at 2020-07-11 18:55:06 +0200
+Processing by AuthnController#whoami as JSON
+  [1m[36mUser Load (1.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."uid" = $1 LIMIT 1[0m  [["uid", "haidynagy77@gmail.com"]]
+  [1m[35m (2.0ms)[0m  SELECT "roles"."role_name", "roles"."mname" FROM "roles" WHERE "roles"."user_id" = $1 AND (mid is null)  [["user_id", 1]]
+  Rendered authn/whoami.json.jbuilder (1.0ms)
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Load (0.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 1]]
+  [1m[36mSQL (2.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$KkFawwjVE78rIrZeE/EeBuOUVwC9BnrjVYuiTXnD1yJ7UBb9.4u9i\",\"expiry\":1595696107,\"last_token\":\"$2a$12$Ny4T.Kt1K0mYPqFmUe1TV.7EItF2kySHjAlExkD2c.lEljphqhGe2\",\"updated_at\":\"2020-07-11T18:55:07.314+02:00\"}}"], ["updated_at", "2020-07-11 16:55:07.315381"], ["id", 1]]
+  [1m[35m (4.0ms)[0m  COMMIT
+Completed 200 OK in 910ms (Views: 59.1ms | ActiveRecord: 11.0ms)
+
+
+Started GET "/api/images" for ::1 at 2020-07-11 18:55:07 +0200
+Processing by ImagesController#index as JSON
+  [1m[36mUser Load (1.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."uid" = $1 LIMIT 1[0m  [["uid", "haidynagy77@gmail.com"]]
+  [1m[35mImage Load (3.0ms)[0m  SELECT Images.*, r.role_name FROM "images" left join Roles r on r.mname='Image' and r.mid=Images.id and r.user_id =1
+  Rendered images/index.json.jbuilder (0.0ms)
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Load (1.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 1]]
+  [1m[36mSQL (0.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$KkFawwjVE78rIrZeE/EeBuOUVwC9BnrjVYuiTXnD1yJ7UBb9.4u9i\",\"expiry\":1595696107,\"last_token\":\"$2a$12$Ny4T.Kt1K0mYPqFmUe1TV.7EItF2kySHjAlExkD2c.lEljphqhGe2\",\"updated_at\":\"2020-07-11T18:55:08.401+02:00\"}}"], ["updated_at", "2020-07-11 16:55:08.404027"], ["id", 1]]
+  [1m[35m (4.0ms)[0m  COMMIT
+Completed 200 OK in 909ms (Views: 54.2ms | ActiveRecord: 12.1ms)
+
+
+Started GET "/api/images" for ::1 at 2020-07-11 18:55:08 +0200
+Processing by ImagesController#index as JSON
+  [1m[36mUser Load (1.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."uid" = $1 LIMIT 1[0m  [["uid", "haidynagy77@gmail.com"]]
+  [1m[35mImage Load (2.0ms)[0m  SELECT Images.*, r.role_name FROM "images" left join Roles r on r.mname='Image' and r.mid=Images.id and r.user_id =1
+  Rendered images/index.json.jbuilder (0.0ms)
+  [1m[36m (0.0ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Load (1.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 1]]
+  [1m[36mSQL (1.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$KkFawwjVE78rIrZeE/EeBuOUVwC9BnrjVYuiTXnD1yJ7UBb9.4u9i\",\"expiry\":1595696107,\"last_token\":\"$2a$12$Ny4T.Kt1K0mYPqFmUe1TV.7EItF2kySHjAlExkD2c.lEljphqhGe2\",\"updated_at\":\"2020-07-11T18:55:09.059+02:00\"}}"], ["updated_at", "2020-07-11 16:55:09.061369"], ["id", 1]]
+  [1m[35m (3.9ms)[0m  COMMIT
+Completed 200 OK in 480ms (Views: 53.0ms | ActiveRecord: 8.9ms)
+
+
+Started GET "/assets/spa-demo/pages/things_page-ca7d9053d1116f3b00bae5eef604dcaf374178509e877d9ebf30b9a404681ab4.html" for ::1 at 2020-07-11 18:55:11 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/thing_selector-d87bfe7d4f66fe608850148c6025235d180fcadb004c4d297db0366935ba0ecf.html" for ::1 at 2020-07-11 18:55:11 +0200
+
+
+Started GET "/assets/spa-demo/subjects/things/thing_editor-4c0df15c69ff81aa6f7fdf8efcf0749caeb44cb69dede52413aef9d028134a3d.html" for ::1 at 2020-07-11 18:55:11 +0200
+
+
+Started GET "/api/things" for ::1 at 2020-07-11 18:55:11 +0200
+Processing by ThingsController#index as JSON
+  [1m[36mUser Load (0.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."uid" = $1 LIMIT 1[0m  [["uid", "haidynagy77@gmail.com"]]
+  [1m[35mRole Exists (1.0ms)[0m  SELECT  1 AS one FROM "roles" WHERE "roles"."user_id" = $1 AND "roles"."role_name" = $2 LIMIT 1  [["user_id", 1], ["role_name", "admin"]]
+  [1m[36mThing Load (2.0ms)[0m  [1mSELECT Things.*, r.role_name FROM "things" join Roles r on r.mname='Thing' and r.mid=Things.id and r.user_id =1[0m
+  Rendered things/index.json.jbuilder (1.1ms)
+  [1m[35m (0.0ms)[0m  BEGIN
+  [1m[36mUser Load (0.0ms)[0m  [1mSELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE[0m  [["id", 1]]
+  [1m[35mSQL (1.0ms)[0m  UPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$KkFawwjVE78rIrZeE/EeBuOUVwC9BnrjVYuiTXnD1yJ7UBb9.4u9i\",\"expiry\":1595696107,\"last_token\":\"$2a$12$Ny4T.Kt1K0mYPqFmUe1TV.7EItF2kySHjAlExkD2c.lEljphqhGe2\",\"updated_at\":\"2020-07-11T18:55:12.206+02:00\"}}"], ["updated_at", "2020-07-11 16:55:12.209066"], ["id", 1]]
+  [1m[36m (1.0ms)[0m  [1mCOMMIT[0m
+Completed 200 OK in 123ms (Views: 51.8ms | ActiveRecord: 5.9ms)
+
+
+Started GET "/assets/spa-demo/pages/inquiries_page-158c694d7833d966ed43ff7cc47aa545537e188a69d38ac5b8ed65c08c9ea799.html" for ::1 at 2020-07-11 18:55:13 +0200
+
+
+Started GET "/assets/spa-demo/subjects/inquiries/inquiry_editor-44088d463a4ecce776d22454358974b0fbc1f50675d9978188e587ae3b6cdc0f.html" for ::1 at 2020-07-11 18:55:14 +0200
+
+
+Started GET "/assets/spa-demo/subjects/inquiries/inquiry_selector-2112bdf37e6dcdd018e5d34bf5db4db2ed2138a74700ab5bd31abf6ec33f9123.html" for ::1 at 2020-07-11 18:55:14 +0200
+
+
+Started GET "/api/inquiries" for ::1 at 2020-07-11 18:55:14 +0200
+Processing by InquiriesController#index as JSON
+  [1m[35mUser Load (1.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."uid" = $1 LIMIT 1  [["uid", "haidynagy77@gmail.com"]]
+  [1m[36mRole Exists (1.0ms)[0m  [1mSELECT  1 AS one FROM "roles" WHERE "roles"."user_id" = $1 AND "roles"."role_name" = $2 LIMIT 1[0m  [["user_id", 1], ["role_name", "admin"]]
+  [1m[35mInquiry Load (2.0ms)[0m  SELECT Inquiries.*, r.role_name FROM "inquiries" join Roles r on r.mname='Inquiry' and r.mid=Inquiries.id and r.user_id =1
+  Rendered inquiries/index.json.jbuilder (1.0ms)
+  [1m[36m (1.0ms)[0m  [1mBEGIN[0m
+  [1m[35mUser Load (1.0ms)[0m  SELECT  "users".* FROM "users" WHERE "users"."id" = $1 LIMIT 1 FOR UPDATE  [["id", 1]]
+  [1m[36mSQL (1.0ms)[0m  [1mUPDATE "users" SET "tokens" = $1, "updated_at" = $2 WHERE "users"."id" = $3[0m  [["tokens", "{\"L45DYqrSmYQEJDwaY3t5Pw\":{\"token\":\"$2a$12$q3ruhX4rvHXzsacgczwqa.OIYm1/ezFLCwJz8jPBAV7WMip3j.gHW\",\"expiry\":1595696039,\"last_token\":\"$2a$12$6bBALKsbH20.cCCFZiLXUufwpY5wBnVvyOte1Jn/V8a2d74hJFEby\",\"updated_at\":\"2020-07-11T18:53:59.572+02:00\"},\"VkvKdY4qM87cCU3QQrUGmQ\":{\"token\":\"$2a$12$KkFawwjVE78rIrZeE/EeBuOUVwC9BnrjVYuiTXnD1yJ7UBb9.4u9i\",\"expiry\":1595696107,\"last_token\":\"$2a$12$Ny4T.Kt1K0mYPqFmUe1TV.7EItF2kySHjAlExkD2c.lEljphqhGe2\",\"updated_at\":\"2020-07-11T18:55:14.758+02:00\"}}"], ["updated_at", "2020-07-11 16:55:14.760593"], ["id", 1]]
+  [1m[35m (4.0ms)[0m  COMMIT
+Completed 200 OK in 105ms (Views: 49.4ms | ActiveRecord: 13.0ms)
+
+
+Started GET "/api/foos" for ::1 at 2020-07-11 18:55:16 +0200
+Processing by FoosController#index as JSON
+  [1m[36mFoo Load (1.0ms)[0m  [1mSELECT "foos".* FROM "foos"[0m
+  Rendered foos/_foo.json.jbuilder (1.0ms)
+  Rendered foos/index.json.jbuilder (19.6ms)
+Completed 200 OK in 67ms (Views: 65.6ms | ActiveRecord: 1.0ms)
